@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { FC } from "react"
-import GridLayout from './GridLayout'
+import GridLayout from './grid/GridLayout'
 
 export const VisualFields:FC = () => {
     const containerStyle = css`
