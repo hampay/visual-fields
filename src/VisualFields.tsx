@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { FC } from "react"
+import GridLayout from './GridLayout'
 
 export const VisualFields:FC = () => {
     const containerStyle = css`
@@ -8,6 +9,6 @@ export const VisualFields:FC = () => {
         overflow: hidden;
     `
     return <div css={containerStyle}>
-
+        <GridLayout />
     </div>
 }
