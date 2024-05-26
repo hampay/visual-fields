@@ -1,13 +1,47 @@
+/* apply a natural box layout model to all elements, but allowing components to change */
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, SimHei, "黑体", "Hiragino Sans GB", "冬青黑体", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+::placeholder,
+select,
+button,
+textarea,
+input {
+  font-family: "Helvetica Neue", Helvetica, Arial, SimHei, "黑体", "Hiragino Sans GB", "冬青黑体", sans-serif;
+}
+
+html,
+body,
+#root,
+#app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden
+}
+
+#app {
+  display: flex;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+      monospace;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
