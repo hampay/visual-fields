@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC } from "react"
-import Dot from './Dot'
+import { FC, ReactNode } from "react"
 type GridItemProps = {
+    children: ReactNode
 }
-export const GridItem: FC<GridItemProps> = () => {
+export const GridItem: FC<GridItemProps> = ({ children }) => {
     const containerStyle = css`
         width: 100%;
         height: 100%;
@@ -13,6 +13,6 @@ export const GridItem: FC<GridItemProps> = () => {
         align-items: center;
     `
     return <div css={containerStyle}>
-        <Dot opacity={1} />
+        { children }
     </div>
 }

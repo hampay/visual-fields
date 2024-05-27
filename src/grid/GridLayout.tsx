@@ -3,20 +3,28 @@ import { css } from '@emotion/react'
 import React from 'react';
 import { Row, Col } from 'antd';
 import { GridItem } from './GridItem';
+import { useTestContext } from '../TestContext';
+import Dot from './Dot';
 
 const GridLayout: React.FC = () => {
-    const rows = 9;
-    const cols = 11;
+    const { dots, numColumns } = useTestContext();
+    const numRows = Math.ceil(dots.length / numColumns);
 
     return (
         <div css={gridContainerStyle}>
-            {Array.from({ length: rows }).map((_, rowIndex) => (
+            {Array.from({ length: numRows }).map((_, rowIndex) => (
                 <Row key={rowIndex} css={rowStyle}>
-                    {Array.from({ length: cols }).map((_, colIndex) => (
-                        <Col key={colIndex} span={24 / cols} css={colStyle}>
-                            <GridItem />
-                        </Col>
-                    ))}
+                    {Array.from({ length: numColumns }).map((_, colIndex) => {
+                        const dotIndex = rowIndex * numColumns + colIndex;
+                        const dot = dots[dotIndex];
+                        return (
+                            <Col key={colIndex} span={24 / numColumns} css={colStyle}>
+                                {dot && <GridItem>
+                                    <Dot dot={dot} />
+                                </GridItem>} {/* Pass the dot as props to GridItem */}
+                            </Col>
+                        );
+                    })}
                 </Row>
             ))}
         </div>
