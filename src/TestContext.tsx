@@ -1,96 +1,172 @@
-// TestContext.tsx
+import { createContext, useState, useContext, useEffect, FC, ReactNode } from 'react';
 
-import React, { createContext, useState, useContext, useEffect, FC, ReactNode } from 'react';
+type OpacityResult = {
+    opacity: number;
+    passed: boolean;
+};
 
 export interface DotRecord {
     id: number;
-    testPassed: boolean | null;
     opacity: number;
-}
-
-interface TestResult {
-    dotId: number;
-    opacity: number;
-    response: boolean;
+    testPassed: boolean | null; // null means the dot hasn't been tested yet
+    testedOpacities: OpacityResult[]; // New property
 }
 
 interface TestContextType {
     dots: DotRecord[];
-    testingOrder: number[];
-    activeDot: number;
-    testResults: TestResult[];
+    activeDotId: number;
+    activeDot: DotRecord | undefined;
     startNextTest: () => void;
-    recordResponse: (response: boolean) => void;
+    recordResponse: (opacity: number, response: boolean) => void;
     numColumns: number;
+    testStarted: boolean
+    testFinished: boolean
+    startTest: () => void;
+    resetTest: () => void;
 }
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
 
 export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [dots, setDots] = useState<DotRecord[]>([]);
-    const [testingOrder, setTestingOrder] = useState<number[]>([]);
-    const [activeDot, setActiveDot] = useState<number>(-1);
-    const [testResults, setTestResults] = useState<TestResult[]>([]);
-    const [lastOpacity, setLastOpacity] = useState<number | null>(null);
-    const numColumns = 17; // Adjust as needed
+    const [activeDotId, setActiveDotId] = useState<number>(-1);
 
-    // Create dot records with unique IDs
+    const testStarted = dots.some(dot => dot.testedOpacities.length > 0);
+    const testFinished = dots.every(dot => dot.testPassed !== null);
+    
+    // const numColumns = 17;
+    // const totalDots = 153;
+    const numColumns = 5;
+    const totalDots = 25;
+
+    const startingOpacity = 0.5;
+
     useEffect(() => {
-        const totalDots = 153; // Adjust as needed
+        initializeDots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const initializeDots = () => {
+        
         const dotsArray: DotRecord[] = [];
         for (let i = 0; i < totalDots; i++) {
-            dotsArray.push({ id: i, testPassed: null, opacity: 1 });
+            dotsArray.push({ id: i, testedOpacities: [], opacity: startingOpacity, testPassed: null});
         }
         setDots(dotsArray);
 
-        // Create testing order
-        const order = Array.from({ length: totalDots }, (_, i) => i);
-        setTestingOrder(shuffle(order));
-    }, []);
-
-    // Shuffle function
-    const shuffle = (array: any[]) => {
-        const shuffledArray = [...array];
-        for (let i = shuffledArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-        }
-        return shuffledArray;
     };
 
-    // Start test with the first untested dot
-    useEffect(() => {
-        const nextDotIndex = testingOrder.findIndex(dotId => dots[dotId].testPassed === null);
-        setActiveDot(testingOrder[nextDotIndex]);
-        setLastOpacity(null);
-    }, [testingOrder, dots]);
+    const findNextDot = () => {
+        const untestedDots = dots.filter(dot => dot.testPassed === null);
+        return untestedDots.length ? untestedDots[Math.floor(Math.random() * untestedDots.length)].id : undefined;
+    };
 
-    // Start the next test with the next untested dot
     const startNextTest = () => {
-        const nextDotIndex = testingOrder.findIndex(dotId => dots[dotId].testPassed === null);
-        setActiveDot(testingOrder[nextDotIndex]);
-        setLastOpacity(null);
-    };
-
-    // Record user response and update test results
-    const recordResponse = (response: boolean) => {
-        if (lastOpacity !== null && activeDot !== -1) {
-            setTestResults([...testResults, { dotId: activeDot, opacity: lastOpacity, response }]);
-            const updatedDots = [...dots];
-            updatedDots[activeDot].testPassed = response;
-            setDots(updatedDots);
+        const nextDotId = findNextDot()
+        if (nextDotId === undefined) {
+            //TODO - handle end of test
+            console.log('end of test', dots)
+        } else {
+            setActiveDotId(nextDotId);
         }
-        setLastOpacity(getNextOpacity());
     };
 
-    // Placeholder function to get next opacity
-    const getNextOpacity = () => {
-        // Implement your logic here to get the next opacity
-        return 0.5; // Placeholder value
+    const recordResponse = (opacity: number, passed: boolean) => {
+        setDots(prevDots => {
+            const updatedDots = [...prevDots];
+            const dot = updatedDots[activeDotId];
+            dot.testedOpacities.push({ opacity: roundToOneDecimal(opacity), passed });
+            const nextOpacity = getNextOpacity(dot.testedOpacities);
+            if (nextOpacity === null) {
+                if (dot.testedOpacities.some(test => test.passed)) {
+                    const lowestPass = dot.testedOpacities.filter(test => test.passed).sort((a, b) => a.opacity - b.opacity)[0];
+                    dot.opacity = lowestPass.opacity;
+                    dot.testPassed = true;
+                } else {
+                    dot.opacity = -1;
+                    dot.testPassed = false;
+                }
+            } else {
+                dot.opacity = nextOpacity;
+            }
+            return updatedDots;
+        });
+    };
+
+    const testedOpacities = dots.reduce((acc, dot) => {
+        return [...acc, ...dot.testedOpacities]
+    }, [] as OpacityResult[]);
+    useEffect(() => {
+        if (testStarted) {
+            startNextTest();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [testedOpacities.length]);
+
+
+    const getNextOpacity = (testedOpacities: { opacity: number; passed: boolean }[]): number | null => {
+        const passes = testedOpacities.filter(test => test.passed);
+        const fails = testedOpacities.filter(test => !test.passed);
+        const lowestPass = passes.length ? passes.sort((a, b) => a.opacity - b.opacity)[0] : undefined;
+        const highestFail = fails.length ? fails.sort((a, b) => b.opacity - a.opacity)[0] : undefined;
+
+        if (lowestPass === undefined && highestFail === undefined) {
+            return startingOpacity;
+        }
+
+        if (lowestPass === undefined && highestFail !== undefined) {
+            if (highestFail.opacity === 1) {
+                return null;
+            } else {
+                return roundToOneDecimal(highestFail.opacity + 0.1);
+            }
+        }
+
+        if (highestFail === undefined && lowestPass !== undefined) {
+            if (lowestPass.opacity === 0.1) {
+                return null;
+            } else {
+                return roundToOneDecimal(lowestPass.opacity - 0.1);
+            }
+        }
+
+        if (lowestPass !== undefined && highestFail !== undefined) {
+            if (roundToOneDecimal(lowestPass.opacity - highestFail.opacity) === 0.1) {
+                return null;
+            } else {
+                return roundToOneDecimal(lowestPass.opacity - 0.1);
+            }
+        }
+
+        return startingOpacity
+    }
+
+    const roundToOneDecimal = (num: number): number => {
+        return Math.round(num * 10) / 10;
+    }    
+
+    const startTest = () => {
+        startNextTest()
+    };
+
+    const resetTest = () => {
+        initializeDots();
+        setActiveDotId(-1);
     };
 
     return (
-        <TestContext.Provider value={{ dots, testingOrder, activeDot, testResults, startNextTest, recordResponse, numColumns }}>
+        <TestContext.Provider value={{ 
+            dots, 
+            activeDotId,
+            activeDot: dots.find(dot => dot.id === activeDotId),
+            startNextTest, 
+            numColumns, 
+            startTest, 
+            resetTest,
+            recordResponse,
+            testStarted,
+            testFinished
+        }}>
             {children}
         </TestContext.Provider>
     );
