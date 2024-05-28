@@ -17,9 +17,10 @@ const GridLayout: React.FC = () => {
                     {Array.from({ length: numColumns }).map((_, colIndex) => {
                         const dotIndex = rowIndex * numColumns + colIndex;
                         const dot = dots[dotIndex];
+                        const isHalfway = dotIndex === Math.floor(dots.length / 2);
                         return (
                             <Col key={colIndex} span={24 / numColumns} css={colStyle}>
-                                {dot && <GridItem>
+                                {dot && <GridItem showCrosshair={isHalfway}>
                                     <Dot dot={dot} />
                                 </GridItem>} {/* Pass the dot as props to GridItem */}
                             </Col>
