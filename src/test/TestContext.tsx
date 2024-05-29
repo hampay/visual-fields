@@ -43,10 +43,20 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const evaluationStarted = dots.some(dot => dot.testedOpacities.length > 0);
     const evaluationFinished = dots.every(dot => dot.testPassed !== null);
 
-    const numColumns = 17;
-    const totalDots = 153;
+    const numColumns = 13;
+    const totalDots = 117;
     // const numColumns = 5;
     // const totalDots = 25;
+
+    //TODO: Make it more sensitive – maybe combine size and opacity
+    //TODO: make it faster – maybe 2 seconds – need to add more dots
+    //TODO: try making the background harder to see on
+    //TODO: maybe move the progress bar into the middle
+    //TODO: hide the progress bar and crosshairs when the test is over
+    //TODO: save the results to local storage
+    //TODO: add results page with historical data
+    //TODO: use historical data to determine starting opacities
+    
     const testTime = 4;
 
     const startingOpacity = 0.2;
