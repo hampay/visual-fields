@@ -2,9 +2,8 @@
 import { css } from '@emotion/react'
 import { useState } from 'react';
 import { Typography } from 'antd';
-import GridLayout from '../grid/GridLayout';
-import { useTestContext } from './TestContext';
 import { Instructions } from '../Instructions';
+import { Test } from './Test';
 
 const { Title } = Typography;
 
@@ -15,16 +14,7 @@ const TestPage: React.FC = () => {
         flex-direction: column;
     `
 
-    const { startTest, recordResponse, activeDot } = useTestContext()
     const [testLoaded, setTestLoaded] = useState(false)
-
-    const handleResponse = (response: boolean) => {
-        if (activeDot) {
-            recordResponse(activeDot.opacity, response)
-        }
-    }
-
-
 
     return (
         <div css={containerStyle}>
@@ -35,7 +25,7 @@ const TestPage: React.FC = () => {
             />}
 
             {testLoaded && <div css={css`flex: 1;`}>
-                <GridLayout />
+                <Test />
             </div>}
 
         </div>

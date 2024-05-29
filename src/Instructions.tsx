@@ -14,10 +14,15 @@ export const Instructions: FC<InstructionsProps> = ({
 }) => {
     const [currentInstruction, setCurrentInstruction] = useState(0)
 
+    const { testingEye } = useTestContext()
+
     const nextInstruction = () => {
         if (currentInstruction === instructions.length - 1) {
             onInstructionComplete()
         } else {
+            if (testingEye === null && currentInstruction === 1) {
+                return
+            }
             setCurrentInstruction(currentInstruction + 1)
         }
     }
@@ -47,7 +52,7 @@ const useGetStartingInstructions = (onClick: () => void) => {
             <Paragraph>The test is made up of a grid of dots that you will be shown one by one.</Paragraph>
         </Card>,
         <Card
-            actions={[<Link onClick={onClick}>Continue</Link>]}
+            actions={testingEye ? [<Link onClick={onClick}>Continue</Link>] : undefined}
             title="Settings"
         >
             <Paragraph>Choose whether you will be testing one eye or both:</Paragraph>

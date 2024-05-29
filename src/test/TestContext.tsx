@@ -41,9 +41,9 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const testFinished = dots.every(dot => dot.testPassed !== null);
     
     // const numColumns = 17;
-    const totalDots = 153;
+    // const totalDots = 153;
     const numColumns = 5;
-    // const totalDots = 25;
+    const totalDots = 25;
     const testTime = 4;
 
     const startingOpacity = 0.5;
