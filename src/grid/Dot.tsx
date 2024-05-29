@@ -16,8 +16,8 @@ const Dot: React.FC<DotProps> = ({ dot }) => {
 
 function getDotStyle(opacity: number) {
     return css`
-        width: 16px;
-        height: 16px;
+        width: 8px;
+        height: 8px;
         background-color: #00ff00;
         border-radius: 50%;
         opacity: ${opacity};

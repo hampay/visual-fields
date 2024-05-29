@@ -42,13 +42,13 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const evaluationStarted = dots.some(dot => dot.testedOpacities.length > 0);
     const evaluationFinished = dots.every(dot => dot.testPassed !== null);
 
-    // const numColumns = 17;
-    // const totalDots = 153;
-    const numColumns = 5;
-    const totalDots = 25;
+    const numColumns = 17;
+    const totalDots = 153;
+    // const numColumns = 5;
+    // const totalDots = 25;
     const testTime = 4;
 
-    const startingOpacity = 0.5;
+    const startingOpacity = 0.2;
 
     useEffect(() => {
         initializeDots();
