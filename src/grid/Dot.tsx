@@ -25,7 +25,7 @@ const Dot: React.FC<DotProps> = ({ dot }) => {
     const wrapperStyle = css`
         animation: ${flashing} .3s infinite;
     `
-    return <div css={wrapperStyle}>
+    return <div css={!evaluationFinished && wrapperStyle}>
         <div css={dotStyle} />
     </div>
 };
