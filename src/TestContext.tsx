@@ -11,7 +11,8 @@ export interface DotRecord {
     testPassed: boolean | null; // null means the dot hasn't been tested yet
     testedOpacities: OpacityResult[]; // New property
 }
-
+export const eyeOptions = ['left', 'right', 'both'] as const;
+type EyeOptions = typeof eyeOptions[number] | null;
 interface TestContextType {
     dots: DotRecord[];
     activeDotId: number;
@@ -19,6 +20,10 @@ interface TestContextType {
     startNextTest: () => void;
     recordResponse: (opacity: number, response: boolean) => void;
     numColumns: number;
+    totalDots: number;
+    testTime: number;
+    testingEye: EyeOptions;
+    setTestingEye: (eye: EyeOptions) => void;
     testStarted: boolean
     testFinished: boolean
     startTest: () => void;
@@ -30,14 +35,16 @@ const TestContext = createContext<TestContextType | undefined>(undefined);
 export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [dots, setDots] = useState<DotRecord[]>([]);
     const [activeDotId, setActiveDotId] = useState<number>(-1);
+    const [testingEye, setTestingEye] = useState<EyeOptions>(null);
 
     const testStarted = dots.some(dot => dot.testedOpacities.length > 0);
     const testFinished = dots.every(dot => dot.testPassed !== null);
     
     // const numColumns = 17;
-    // const totalDots = 153;
+    const totalDots = 153;
     const numColumns = 5;
-    const totalDots = 25;
+    // const totalDots = 25;
+    const testTime = 4;
 
     const startingOpacity = 0.5;
 
@@ -152,6 +159,7 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const resetTest = () => {
         initializeDots();
         setActiveDotId(-1);
+        setTestingEye(null);
     };
 
     return (
@@ -160,12 +168,16 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
             activeDotId,
             activeDot: dots.find(dot => dot.id === activeDotId),
             startNextTest, 
-            numColumns, 
+            numColumns,
+            totalDots,
+            testTime,
             startTest, 
             resetTest,
             recordResponse,
             testStarted,
-            testFinished
+            testFinished,
+            testingEye,
+            setTestingEye
         }}>
             {children}
         </TestContext.Provider>

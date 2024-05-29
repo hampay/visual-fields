@@ -22,11 +22,7 @@ const SpaceBarListener: React.FC<SpaceBarListenerProps> = ({ onResponse }) => {
     };
   }, [onResponse]);
 
-  return (
-    <div>
-      <p>Press the space bar to respond.</p>
-    </div>
-  );
+  return <></>
 };
 
 export default SpaceBarListener;
