@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import React from 'react';
 import { Row, Col } from 'antd';
 import { GridItem } from './GridItem';
-import { useTestContext } from '../TestContext';
+import { useTestContext } from '../test/TestContext';
 import Dot from './Dot';
 
 const GridLayout: React.FC = () => {

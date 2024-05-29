@@ -2,9 +2,9 @@
 import { css } from '@emotion/react'
 import { useState } from 'react';
 import { Typography } from 'antd';
-import GridLayout from './grid/GridLayout';
+import GridLayout from '../grid/GridLayout';
 import { useTestContext } from './TestContext';
-import { Instructions } from './Instructions';
+import { Instructions } from '../Instructions';
 
 const { Title } = Typography;
 
@@ -38,9 +38,6 @@ const TestPage: React.FC = () => {
                 <GridLayout />
             </div>}
 
-            {/* <div><button onClick={() => handleResponse(true)}>Pass √</button> <button onClick={() => handleResponse(false)}>fail x</button></div> */}
-
-            {/* Add controls for starting/stopping the test */}
         </div>
     );
 };

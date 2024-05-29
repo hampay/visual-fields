@@ -6,9 +6,9 @@ import { Layout } from 'antd';
 import Header from './Header';
 import HomePage from './HomePage';
 import ResultsPage from './ResultsPage';
-import TestPage from './TestPage';
+import TestPage from './test/TestPage';
 import { UserProvider } from './UserContext';
-import { TestProvider } from './TestContext';
+import { TestProvider } from './test/TestContext';
 
 const { Content, Footer } = Layout;
 

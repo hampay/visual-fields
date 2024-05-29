@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import React from 'react';
-import { DotRecord, useTestContext } from '../TestContext';
+import { DotRecord, useTestContext } from '../test/TestContext';
 
 interface DotProps {
     dot: DotRecord;
