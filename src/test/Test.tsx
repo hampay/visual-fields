@@ -4,18 +4,10 @@ import { FC, useEffect, useRef, useState } from "react"
 import GridLayout from "../grid/GridLayout"
 import { useTestContext } from "./TestContext"
 import SpaceBarListener from "../SpaceBarListener"
-import { Button, ConfigProvider, notification, theme } from 'antd'
+import { Button, notification, theme } from 'antd'
 const { useToken } = theme
 
 export const Test: FC = () => {
-    return <ConfigProvider
-        theme={{ algorithm: [theme.darkAlgorithm] }}
-    >
-        <StyledTest />
-    </ConfigProvider>
-}
-
-const StyledTest: FC = () => {
 
     const { token } = useToken()
 
