@@ -1,17 +1,24 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import React from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Progress } from 'antd';
 import { GridItem } from './GridItem';
 import { useTestContext } from '../test/TestContext';
 import Dot from './Dot';
 
 const GridLayout: React.FC = () => {
-    const { dots, numColumns } = useTestContext();
+    const { dots, numColumns, progress } = useTestContext();
     const numRows = Math.ceil(dots.length / numColumns);
+
+    const progressStyle = css`
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+    `
 
     return (
         <div css={gridContainerStyle}>
+            <Progress size={30} type="circle" css={progressStyle} percent={progress * 100} />
             {Array.from({ length: numRows }).map((_, rowIndex) => (
                 <Row key={rowIndex} css={rowStyle}>
                     {Array.from({ length: numColumns }).map((_, colIndex) => {
@@ -39,6 +46,7 @@ const gridContainerStyle = css`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative
 `;
 
 const rowStyle = css`

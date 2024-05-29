@@ -29,6 +29,7 @@ interface TestContextType {
     startEvaluation: () => void;
     resetEvaluation: () => void;
     testActive: boolean;
+    progress: number;
 }
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
@@ -205,7 +206,8 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
             evaluationFinished: evaluationFinished,
             evaluatedEye: evaluatedEye,
             setEvaluatedEye: setEvaluatedEye,
-            testActive: testActive
+            testActive: testActive,
+            progress: dots.filter(dot => dot.testPassed !== null).length / totalDots
         }}>
             {children}
         </TestContext.Provider>

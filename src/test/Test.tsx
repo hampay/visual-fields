@@ -14,7 +14,7 @@ export const Test: FC = () => {
     const containerStyle = css`
         display: flex;
         height: 100%;
-        background: ${token.colorBgBase};
+        background: ${token.colorBgElevated};
         justify-content: center;
         align-items: center;
     `
@@ -26,11 +26,6 @@ export const Test: FC = () => {
             recordResponse(activeDot.opacity, true)
         }
     }
-
-    // useEffect(() => {
-    //     startTest()
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [])
 
     const containerRef = useRef<HTMLDivElement>(null);
 
