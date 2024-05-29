@@ -41,7 +41,7 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const evaluationStarted = dots.some(dot => dot.testedOpacities.length > 0);
     const evaluationFinished = dots.every(dot => dot.testPassed !== null);
-    
+
     // const numColumns = 17;
     // const totalDots = 153;
     const numColumns = 5;
@@ -52,14 +52,14 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     useEffect(() => {
         initializeDots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const initializeDots = () => {
-        
+
         const dotsArray: DotRecord[] = [];
         for (let i = 0; i < totalDots; i++) {
-            dotsArray.push({ id: i, testedOpacities: [], opacity: startingOpacity, testPassed: null});
+            dotsArray.push({ id: i, testedOpacities: [], opacity: startingOpacity, testPassed: null });
         }
         setDots(dotsArray);
 
@@ -80,6 +80,22 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
             setActiveDotId(nextDotId);
         }
     };
+
+    useEffect(() => {
+
+        if (activeDotId < 0 || !testActive) {
+            return;
+        }
+        let timer: NodeJS.Timeout;
+        timer = setTimeout(() => {
+            const dot = dots.find(dot => dot.id === activeDotId);
+            dot && recordResponse(dot.opacity, false);
+        }, testTime * 1000);
+
+        return () => clearTimeout(timer);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeDotId, testActive])
 
     const recordResponse = (opacity: number, passed: boolean) => {
         if (!testActive) {
@@ -115,10 +131,10 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (evaluationStarted) {
             timer = setTimeout(() => {
                 startNextTest();
-            }, randomNumberBetween(1,3) * 1000);
+            }, randomNumberBetween(1, 3) * 1000);
         }
         return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [testedOpacities.length]);
 
 
@@ -161,7 +177,7 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const roundToOneDecimal = (num: number): number => {
         return Math.round(num * 10) / 10;
-    }    
+    }
 
     const startEvaluation = () => {
         startNextTest()
@@ -174,15 +190,15 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     return (
-        <TestContext.Provider value={{ 
-            dots, 
+        <TestContext.Provider value={{
+            dots,
             activeDotId,
             activeDot: dots.find(dot => dot.id === activeDotId),
-            startNextTest, 
+            startNextTest,
             numColumns,
             totalDots,
             testTime,
-            startEvaluation: startEvaluation, 
+            startEvaluation: startEvaluation,
             resetEvaluation: resetEvaluation,
             recordResponse,
             evaluationStarted: evaluationStarted,
