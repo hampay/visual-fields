@@ -27,7 +27,7 @@ const StyledTest: FC = () => {
         align-items: center;
     `
 
-    const { startTest, recordResponse, activeDot, testStarted } = useTestContext()
+    const { startEvaluation, recordResponse, activeDot, evaluationStarted } = useTestContext()
 
     const markDotSeen = () => {
         if (activeDot) {
@@ -74,14 +74,14 @@ const StyledTest: FC = () => {
 
     useEffect(() => {
         let timer: NodeJS.Timeout
-        if (isFullscreen && !testStarted) {
+        if (isFullscreen && !evaluationStarted) {
             timer = setTimeout(() => {
-                startTest()
-            }, 1000)
+                startEvaluation()
+            }, 2000)
         }
         return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isFullscreen, testStarted])
+    }, [isFullscreen, evaluationStarted])
 
 
     return <div css={containerStyle} ref={containerRef}>

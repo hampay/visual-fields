@@ -14,13 +14,13 @@ export const Instructions: FC<InstructionsProps> = ({
 }) => {
     const [currentInstruction, setCurrentInstruction] = useState(0)
 
-    const { testingEye } = useTestContext()
+    const { evaluatedEye } = useTestContext()
 
     const nextInstruction = () => {
         if (currentInstruction === instructions.length - 1) {
             onInstructionComplete()
         } else {
-            if (testingEye === null && currentInstruction === 1) {
+            if (evaluatedEye === null && currentInstruction === 1) {
                 return
             }
             setCurrentInstruction(currentInstruction + 1)
@@ -41,7 +41,7 @@ const useGetStartingInstructions = (onClick: () => void) => {
     const { totalDots, testTime } = useTestContext()
     const minutes = roundedMinutesFromSeconds(totalDots * (testTime + 1))
 
-    const { setTestingEye, testingEye } = useTestContext()
+    const { setEvaluatedEye, evaluatedEye } = useTestContext()
 
     return [
         <Card
@@ -52,12 +52,12 @@ const useGetStartingInstructions = (onClick: () => void) => {
             <Paragraph>The test is made up of a grid of dots that you will be shown one by one.</Paragraph>
         </Card>,
         <Card
-            actions={testingEye ? [<Link onClick={onClick}>Continue</Link>] : undefined}
+            actions={evaluatedEye ? [<Link onClick={onClick}>Continue</Link>] : undefined}
             title="Settings"
         >
             <Paragraph>Choose whether you will be testing one eye or both:</Paragraph>
             <Paragraph>
-                <Radio.Group options={[...eyeOptions]} onChange={(e) => setTestingEye(e.target.value)} value={testingEye} optionType="button" />
+                <Radio.Group options={[...eyeOptions]} onChange={(e) => setEvaluatedEye(e.target.value)} value={evaluatedEye} optionType="button" />
             </Paragraph>
         </Card>,
         <Card

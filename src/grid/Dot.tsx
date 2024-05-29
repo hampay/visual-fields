@@ -8,8 +8,8 @@ interface DotProps {
 }
 
 const Dot: React.FC<DotProps> = ({ dot }) => {
-    const { activeDotId, testFinished } = useTestContext();
-    const opacity = (testFinished || dot.id === activeDotId) ? dot.opacity : 0;
+    const { activeDotId, evaluationFinished, testActive } = useTestContext();
+    const opacity = (evaluationFinished || (dot.id === activeDotId && testActive)) ? dot.opacity : 0;
     const dotStyle = getDotStyle(opacity)
     return <div css={dotStyle} />;
 };

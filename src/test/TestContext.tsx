@@ -22,12 +22,13 @@ interface TestContextType {
     numColumns: number;
     totalDots: number;
     testTime: number;
-    testingEye: EyeOptions;
-    setTestingEye: (eye: EyeOptions) => void;
-    testStarted: boolean
-    testFinished: boolean
-    startTest: () => void;
-    resetTest: () => void;
+    evaluatedEye: EyeOptions;
+    setEvaluatedEye: (eye: EyeOptions) => void;
+    evaluationStarted: boolean
+    evaluationFinished: boolean
+    startEvaluation: () => void;
+    resetEvaluation: () => void;
+    testActive: boolean;
 }
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
@@ -35,10 +36,11 @@ const TestContext = createContext<TestContextType | undefined>(undefined);
 export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [dots, setDots] = useState<DotRecord[]>([]);
     const [activeDotId, setActiveDotId] = useState<number>(-1);
-    const [testingEye, setTestingEye] = useState<EyeOptions>(null);
+    const [evaluatedEye, setEvaluatedEye] = useState<EyeOptions>(null);
+    const [testActive, setTestActive] = useState<boolean>(false);
 
-    const testStarted = dots.some(dot => dot.testedOpacities.length > 0);
-    const testFinished = dots.every(dot => dot.testPassed !== null);
+    const evaluationStarted = dots.some(dot => dot.testedOpacities.length > 0);
+    const evaluationFinished = dots.every(dot => dot.testPassed !== null);
     
     // const numColumns = 17;
     // const totalDots = 153;
@@ -69,16 +71,21 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     const startNextTest = () => {
+        setTestActive(true);
         const nextDotId = findNextDot()
         if (nextDotId === undefined) {
-            //TODO - handle end of test
-            console.log('end of test', dots)
+            //TODO - handle end of evaluation
+            console.log('end of evaluation', dots)
         } else {
             setActiveDotId(nextDotId);
         }
     };
 
     const recordResponse = (opacity: number, passed: boolean) => {
+        if (!testActive) {
+            return;
+        }
+        setTestActive(false)
         setDots(prevDots => {
             const updatedDots = [...prevDots];
             const dot = updatedDots[activeDotId];
@@ -104,9 +111,13 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
         return [...acc, ...dot.testedOpacities]
     }, [] as OpacityResult[]);
     useEffect(() => {
-        if (testStarted) {
-            startNextTest();
+        let timer: NodeJS.Timeout;
+        if (evaluationStarted) {
+            timer = setTimeout(() => {
+                startNextTest();
+            }, randomNumberBetween(1,3) * 1000);
         }
+        return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [testedOpacities.length]);
 
@@ -152,14 +163,14 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
         return Math.round(num * 10) / 10;
     }    
 
-    const startTest = () => {
+    const startEvaluation = () => {
         startNextTest()
     };
 
-    const resetTest = () => {
+    const resetEvaluation = () => {
         initializeDots();
         setActiveDotId(-1);
-        setTestingEye(null);
+        setEvaluatedEye(null);
     };
 
     return (
@@ -171,13 +182,14 @@ export const TestProvider: FC<{ children: ReactNode }> = ({ children }) => {
             numColumns,
             totalDots,
             testTime,
-            startTest, 
-            resetTest,
+            startEvaluation: startEvaluation, 
+            resetEvaluation: resetEvaluation,
             recordResponse,
-            testStarted,
-            testFinished,
-            testingEye,
-            setTestingEye
+            evaluationStarted: evaluationStarted,
+            evaluationFinished: evaluationFinished,
+            evaluatedEye: evaluatedEye,
+            setEvaluatedEye: setEvaluatedEye,
+            testActive: testActive
         }}>
             {children}
         </TestContext.Provider>
@@ -191,3 +203,7 @@ export const useTestContext = () => {
     }
     return context;
 };
+
+const randomNumberBetween = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
